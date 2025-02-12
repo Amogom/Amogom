@@ -4,6 +4,20 @@ let indiceActual = 0;
 let puntos = 0;
 let pistasUsadas = 0;
 
+// Cambiamos el título del juego
+document.title = "Juego de Adivinanzas Mágicas";
+const titulo = document.createElement('h1');
+titulo.textContent = "Juego de Adivinanzas Mágicas";
+titulo.style.textAlign = "center";
+document.body.prepend(titulo);
+
+// Aplicamos un fondo bonito
+document.body.style.background = "url('https://source.unsplash.com/1600x900/?magic,stars') no-repeat center center fixed";
+document.body.style.backgroundSize = "cover";
+document.body.style.color = "white";
+document.body.style.fontFamily = "Arial, sans-serif";
+document.body.style.textShadow = "2px 2px 5px black";
+
 // Obtenemos el elemento del canvas y su contexto para dibujar en él
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -61,7 +75,7 @@ document.getElementById('verificar').addEventListener('click', () => {
     const respuestaUsuario = document.getElementById('respuesta').value.trim().toLowerCase();
     if (respuestaUsuario === imagenes[indiceActual].nombre) {
         let puntosObtenidos = 10 - pistasUsadas * 2;
-        puntosObtenidos = puntosObtenidos < 0 ? 0 : puntosObtenidos;
+        puntosObtenidos = puntosObtenidos < 5 ? 5 : puntosObtenidos; // La puntuación mínima es 5
         puntos += puntosObtenidos;
         alert(`¡Correcto! Puntos obtenidos: ${puntosObtenidos}`);
         indiceActual++;
@@ -70,61 +84,5 @@ document.getElementById('verificar').addEventListener('click', () => {
         alert('Incorrecto. Intenta de nuevo.');
     }
 });
-
-// Botón para subir nuevas imágenes con opciones de eliminación
-const subirBtn = document.createElement('button');
-subirBtn.textContent = '+';
-subirBtn.id = 'subirBtn';
-document.body.appendChild(subirBtn);
-
-subirBtn.addEventListener('click', () => {
-    const contraseña = prompt('Introduce la contraseña para administrar imágenes:');
-    if (contraseña === 'admin123') {
-        const opcion = prompt('Elige una opción: \n1. Agregar nueva imagen \n2. Eliminar imagen existente');
-        if (opcion === '1') {
-            const nuevaImagen = prompt('Introduce la URL de la nueva imagen:');
-            const nuevoNombre = prompt('Introduce el nombre del personaje:');
-            const nuevasPistas = prompt('Introduce pistas separadas por comas:').split(',');
-            imagenes.push({ src: nuevaImagen, nombre: nuevoNombre.toLowerCase(), pistas: nuevasPistas });
-            alert('Imagen añadida con éxito.');
-        } else if (opcion === '2') {
-            const eliminarNombre = prompt('Introduce el nombre del personaje a eliminar:').toLowerCase();
-            const index = imagenes.findIndex(img => img.nombre === eliminarNombre);
-            if (index !== -1) {
-                imagenes.splice(index, 1);
-                alert('Imagen eliminada con éxito.');
-            } else {
-                alert('No se encontró la imagen con ese nombre.');
-            }
-        } else {
-            alert('Opción no válida.');
-        }
-    } else {
-        alert('Contraseña incorrecta. No puedes administrar imágenes.');
-    }
-});
-
-// Estilos para posicionar el botón en la esquina superior derecha
-document.head.insertAdjacentHTML('beforeend', `
-    <style>
-        #subirBtn {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            width: 40px;
-            height: 40px;
-            font-size: 24px;
-            border: none;
-            background-color: #ff9800;
-            color: white;
-            border-radius: 50%;
-            cursor: pointer;
-            box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
-        }
-        #subirBtn:hover {
-            background-color: #e68900;
-        }
-    </style>
-`);
 
 cargarImagen();
