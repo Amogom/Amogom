@@ -21,10 +21,6 @@ const pistaTexto = document.createElement('p');
 pistaTexto.id = 'pistaTexto';
 document.body.appendChild(pistaTexto);
 
-const pistasRestantesTexto = document.createElement('p');
-pistasRestantesTexto.id = 'pistasRestantesTexto';
-document.body.appendChild(pistasRestantesTexto);
-
 // Creamos un array con las imágenes, nombres y pistas de los personajes
 let imagenes = [
     { src: '../imagenes/CastilloDisneyLandParis.png', nombre: 'castillodisneylandparis', pistas: ["Es un famoso parque temático", "Ubicado en Europa"] },
@@ -51,7 +47,6 @@ function cargarImagen() {
     pistasUsadas = 0;
     blurRadius = 10;
     pistaTexto.textContent = "";
-    pistasRestantesTexto.textContent = `Pistas restantes: ${imagenes[indiceActual].pistas.length}`;
     img.src = imagenes[indiceActual].src;
 }
 
@@ -76,7 +71,6 @@ document.getElementById('pista').addEventListener('click', () => {
         blurRadius -= 2;
         pistasUsadas++;
         pistaTexto.textContent = imagenes[indiceActual].pistas[pistasUsadas - 1] || "No hay más pistas disponibles";
-        pistasRestantesTexto.textContent = `Pistas restantes: ${imagenes[indiceActual].pistas.length - pistasUsadas}`;
         aplicarDesenfoque();
     }
 });
@@ -84,13 +78,47 @@ document.getElementById('pista').addEventListener('click', () => {
 document.getElementById('verificar').addEventListener('click', () => {
     const respuestaUsuario = document.getElementById('respuesta').value.trim().toLowerCase();
     if (respuestaUsuario === imagenes[indiceActual].nombre) {
-        let puntosObtenidos = Math.max(10 - pistasUsadas * 2, 5);
+        let puntosObtenidos = 10 - pistasUsadas * 2;
+        puntosObtenidos = puntosObtenidos < 0 ? 0 : puntosObtenidos;
         puntos += puntosObtenidos;
         alert(`¡Correcto! Puntos obtenidos: ${puntosObtenidos}`);
         indiceActual++;
         cargarImagen();
     } else {
         alert('Incorrecto. Intenta de nuevo.');
+    }
+});
+
+// Botón para subir nuevas imágenes con opciones de eliminación
+const subirBtn = document.createElement('button');
+subirBtn.textContent = '+';
+subirBtn.id = 'subirBtn';
+document.body.appendChild(subirBtn);
+
+subirBtn.addEventListener('click', () => {
+    const contraseña = prompt('Introduce la contraseña para administrar imágenes:');
+    if (contraseña === 'admin123') {
+        const opcion = prompt('Elige una opción: \n1. Agregar nueva imagen \n2. Eliminar imagen existente');
+        if (opcion === '1') {
+            const nuevaImagen = prompt('Introduce la URL de la nueva imagen:');
+            const nuevoNombre = prompt('Introduce el nombre del personaje:');
+            const nuevasPistas = prompt('Introduce pistas separadas por comas:').split(',');
+            imagenes.push({ src: nuevaImagen, nombre: nuevoNombre.toLowerCase(), pistas: nuevasPistas });
+            alert('Imagen añadida con éxito.');
+        } else if (opcion === '2') {
+            const eliminarNombre = prompt('Introduce el nombre del personaje a eliminar:').toLowerCase();
+            const index = imagenes.findIndex(img => img.nombre === eliminarNombre);
+            if (index !== -1) {
+                imagenes.splice(index, 1);
+                alert('Imagen eliminada con éxito.');
+            } else {
+                alert('No se encontró la imagen con ese nombre.');
+            }
+        } else {
+            alert('Opción no válida.');
+        }
+    } else {
+        alert('Contraseña incorrecta. No puedes administrar imágenes.');
     }
 });
 
