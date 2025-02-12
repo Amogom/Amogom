@@ -4,13 +4,6 @@ let indiceActual = 0;
 let puntos = 0;
 let pistasUsadas = 0;
 
-// Cambiamos el título del juego
-document.title = "Juego de Adivinanzas Mágicas";
-const titulo = document.createElement('h1');
-titulo.textContent = "Juego de Adivinanzas Mágicas";
-titulo.style.textAlign = "center";
-document.body.prepend(titulo);
-
 // Aplicamos un fondo bonito
 document.body.style.background = "url('https://source.unsplash.com/1600x900/?magic,stars') no-repeat center center fixed";
 document.body.style.backgroundSize = "cover";
@@ -24,6 +17,62 @@ const ctx = canvas.getContext('2d');
 const pistaTexto = document.createElement('p');
 pistaTexto.id = 'pistaTexto';
 document.body.appendChild(pistaTexto);
+
+// Botón para administrar imágenes
+const adminBtn = document.createElement('button');
+adminBtn.textContent = '+';
+adminBtn.id = 'adminBtn';
+document.body.appendChild(adminBtn);
+
+adminBtn.addEventListener('click', () => {
+    const contraseña = prompt('Introduce la contraseña para administrar imágenes:');
+    if (contraseña === 'admin123') {
+        const opcion = prompt('Elige una opción: \n1. Agregar nueva imagen \n2. Eliminar imagen existente');
+        if (opcion === '1') {
+            const nuevaImagen = prompt('Introduce la URL de la nueva imagen:');
+            const nuevoNombre = prompt('Introduce el nombre del personaje:');
+            const nuevasPistas = prompt('Introduce pistas separadas por comas:').split(',');
+            imagenes.push({ src: nuevaImagen, nombre: nuevoNombre.toLowerCase(), pistas: nuevasPistas });
+            alert('Imagen añadida con éxito.');
+        } else if (opcion === '2') {
+            const eliminarNombre = prompt('Introduce el nombre del personaje a eliminar:').toLowerCase();
+            const index = imagenes.findIndex(img => img.nombre === eliminarNombre);
+            if (index !== -1) {
+                imagenes.splice(index, 1);
+                alert('Imagen eliminada con éxito.');
+            } else {
+                alert('No se encontró la imagen con ese nombre.');
+            }
+        } else {
+            alert('Opción no válida.');
+        }
+    } else {
+        alert('Contraseña incorrecta. No puedes administrar imágenes.');
+    }
+});
+
+// Estilos para posicionar el botón en la esquina superior derecha
+document.head.insertAdjacentHTML('beforeend', `
+    <style>
+        #adminBtn {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            width: 40px;
+            height: 40px;
+            font-size: 24px;
+            border: none;
+            background-color: #ff9800;
+            color: white;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+        }
+        #adminBtn:hover {
+            background-color: #e68900;
+        }
+    </style>
+`);
 
 // Creamos un array con las imágenes, nombres y pistas de los personajes
 let imagenes = [
@@ -60,13 +109,17 @@ function aplicarDesenfoque() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
     canvas.style.filter = `blur(${blurRadius}px)`;
+    if (blurRadius > 0 && pistasUsadas < imagenes[indiceActual].pistas.length) {
+        pistaTexto.textContent = imagenes[indiceActual].pistas[pistasUsadas] || "No hay más pistas disponibles";
+    } else {
+        pistaTexto.textContent = "";
+    }
 }
 
 document.getElementById('pista').addEventListener('click', () => {
     if (blurRadius > 0) {
         blurRadius -= 2;
         pistasUsadas++;
-        pistaTexto.textContent = imagenes[indiceActual].pistas[pistasUsadas - 1] || "No hay más pistas disponibles";
         aplicarDesenfoque();
     }
 });
