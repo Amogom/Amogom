@@ -3,16 +3,6 @@ let blurRadius = 10;
 let indiceActual = 0;
 let puntos = 0;
 let pistasUsadas = 0;
-let ranking = JSON.parse(localStorage.getItem('ranking')) || [];
-
-// Establecemos el título de la página
-document.title = "Juego de Adivinanzas Mágicas";
-
-// Establecemos el fondo decorado
-document.body.style.backgroundImage = "url('https://source.unsplash.com/1600x900/?magic,stars')";
-document.body.style.backgroundSize = "cover";
-document.body.style.color = "white";
-document.body.style.textAlign = "center";
 
 // Obtenemos el elemento del canvas y su contexto para dibujar en él
 const canvas = document.getElementById('canvas');
@@ -37,21 +27,13 @@ imagenes = imagenes.sort(() => Math.random() - 0.5);
 const img = new Image();
 function cargarImagen() {
     if (indiceActual >= imagenes.length) {
-        const nombreJugador = prompt("¡Juego Terminado! Ingresa tu nombre para guardar tu puntuación:");
-        ranking.push({ nombre: nombreJugador, puntos });
-        ranking.sort((a, b) => b.puntos - a.puntos);
-        localStorage.setItem('ranking', JSON.stringify(ranking));
-        mostrarRanking();
+        document.body.innerHTML = '<h1>¡Juego Terminado!</h1><p>Puntaje final: ' + puntos + '</p>';
         return;
     }
     pistasUsadas = 0;
     blurRadius = 10;
     pistaTexto.textContent = "";
     img.src = imagenes[indiceActual].src;
-}
-
-function mostrarRanking() {
-    document.body.innerHTML = '<h1>Ranking de Jugadores</h1><ol>' + ranking.map(player => `<li>${player.nombre}: ${player.puntos} puntos</li>`).join('') + '</ol>';
 }
 
 img.onload = () => {
@@ -121,5 +103,28 @@ subirBtn.addEventListener('click', () => {
         alert('Contraseña incorrecta. No puedes administrar imágenes.');
     }
 });
+
+// Estilos para posicionar el botón en la esquina superior derecha
+document.head.insertAdjacentHTML('beforeend', `
+    <style>
+        #subirBtn {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            width: 40px;
+            height: 40px;
+            font-size: 24px;
+            border: none;
+            background-color: #ff9800;
+            color: white;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+        }
+        #subirBtn:hover {
+            background-color: #e68900;
+        }
+    </style>
+`);
 
 cargarImagen();
